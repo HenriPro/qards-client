@@ -188,6 +188,7 @@ function exchange(data) {
   }
 }
 
+
 function leave(socketId) {
   console.log('leave', socketId);
   const pc = pcPeers[socketId];
@@ -200,23 +201,6 @@ function leave(socketId) {
   container.setState({ remoteList: remoteList });
   container.setState({info: 'One peer leave!'});
 }
-
-socket.on('exchange', function(data){
-  exchange(data);
-});
-socket.on('leave', function(socketId){
-  leave(socketId);
-});
-
-socket.on('connect', function(data) {
-  console.log('connect');
-  getLocalStream(true, function(stream) {
-    localStream = stream;
-    container.setState({selfViewSrc: stream.toURL()});
-    container.setState({bigViewSrc: stream.toURL()});
-    container.setState({status: 'ready', info: 'Please enter or create room ID'});
-  });
-});
 
 function logError(error) {
   console.log("logError", error);
@@ -262,7 +246,25 @@ const RCTWebRTCDemo = React.createClass({
   },
   componentDidMount: function() {
     container = this;
+    socket.on('exchange', function(data){
+      exchange(data);
+    });
+    socket.on('leave', function(socketId){
+      leave(socketId);
+    });
+
+    socket.on('connect', function(data) {
+      console.log('connect');
+      getLocalStream(true, function(stream) {
+        localStream = stream;
+        container.setState({selfViewSrc: stream.toURL()});
+        container.setState({bigViewSrc: stream.toURL()});
+        container.setState({status: 'ready', info: 'Please enter or create room ID'});
+      });
+    });
+    
     this._press();
+
   },
   _press(event) {
     //this.refs.roomID.blur();
@@ -387,6 +389,9 @@ const styles = StyleSheet.create({
     height: 150,
   },
 });
+
+
+
 
 export default RCTWebRTCDemo;
 //AppRegistry.registerComponent('RCTWebRTCDemo', () => RCTWebRTCDemo);
